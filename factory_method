@@ -1,0 +1,154 @@
+package app3;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Scanner;
+
+
+public class Main {
+	
+	//client
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		
+		//load the classes
+		File folder = new File("./bin/app3");
+		String[] files = folder.list();
+
+		for (String file : files) {
+			try {
+				Class.forName("app3." + file.split("\\.")[0]);
+			} catch (Exception ex) {
+				System.out.println("Exception: " + ex.toString());
+			}
+		}
+		
+		
+		while(true){
+			
+			//List names of Shapes
+			int index=1;
+			for(ShapeFactory factory : ShapeFactory.factories){
+				System.out.println( index + ": " + factory.getName());
+				index++;
+			}
+			
+			//user selects on shape
+			System.out.println("Select a shape: ");
+			Scanner scanner = new Scanner(System.in);
+			int choice = scanner.nextInt();
+			
+			//Shape object should be created
+			Shape shape = ShapeFactory.factories.get(choice-1).getShape();
+			
+			//Specific Shape object should take its input
+			shape.input();
+			
+			//Specific Shape object should draw the shape
+			shape.draw();
+		}
+
+	}
+}
+	
+	interface Shape{
+		void input();
+		void draw();
+	}
+	
+	abstract class ShapeFactory{
+		abstract String getIcon();
+		abstract String getName();
+		abstract Shape getShape();
+		
+		static ArrayList<ShapeFactory> factories = new ArrayList<>();
+		
+		public ShapeFactory(/*ShapeFactory this*/) {
+			factories.add(this);
+		}
+	}
+	
+	//-----------------------------------------
+	
+	class Circle implements Shape{
+		private int cx, cy, radius;
+		
+		public void input(/*this*/){
+			Scanner scanner = new Scanner(System.in);
+			
+			System.out.println("Enter cx: ");
+			cx = scanner.nextInt();
+			
+			System.out.println("Enter cy: ");
+			cy = scanner.nextInt();
+			
+			System.out.println("Enter radius: ");
+			radius = scanner.nextInt();
+		}
+		
+		public void draw(/*this*/){
+			System.out.println("Circle: " + cx + " " + cy + " " + radius);
+		}
+	}
+	
+	class CircleFactory extends ShapeFactory{
+		
+		static{
+			new CircleFactory();
+		}
+		
+		String getIcon(){
+			return "CircleIcon.jpg";
+		}
+		
+		String getName(){
+			return "Circle";
+		}
+		
+		Shape getShape(){
+			return new Circle();
+		}
+	}
+	
+	class Rectangle implements Shape{
+		private int left, top, width, height;
+		
+		public void input(/*this*/){
+			Scanner scanner = new Scanner(System.in);
+			
+			System.out.println("Enter left: ");
+			left = scanner.nextInt();
+			
+			System.out.println("Enter top: ");
+			top = scanner.nextInt();
+			
+			System.out.println("Enter width: ");
+			width = scanner.nextInt();
+			
+			System.out.println("Enter height: ");
+			height = scanner.nextInt();
+		}
+		
+		public void draw(/*this*/){
+			System.out.println("Rectangle: " + left + " " + top + " " + width + " " + height);
+		}
+	}
+	
+	class RectangleFactory extends ShapeFactory{
+		
+		static{
+			new RectangleFactory();
+		}
+		
+		String getIcon(){
+			return "RectangleIcon.jpg";
+		}
+		
+		String getName(){
+			return "Rectangle";
+		}
+		
+		Shape getShape(){
+			return new Rectangle();
+		}
+	}
