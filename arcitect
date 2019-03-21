@@ -1,0 +1,64 @@
+package com.company;
+
+//Reliable
+//Extensible
+//Reusable
+//Maintainable
+//Unit Testable
+
+	//TDD - UI -> Test -> Code <- UI
+
+//LSP
+
+class ImmutableSuperClass{
+	
+}
+
+class ImmutableSubClass extends ImmutableSuperClass{
+	
+}
+
+class A {
+	public void add() {
+
+	}
+}
+
+class B extends A {
+	public void add() {
+
+		//Access file
+		//throw new RuntimeException("File not Found"); //breaks LSP
+	}
+}
+
+// Server - Restful Services
+// to call Restful HTTP Connection and Request with Response is required
+
+// Proxy Classes to manage HTTP Requests to the Server
+
+// Data Access Logic - Sqlite or JSON Files
+// main thread will access DB, Image Loading, File IO, HTTP request
+// Hence these operations must be done asynchronously
+
+// Business Logic - Objects or Collections
+// Main Thread will be used to call function
+
+// Presentation - UI
+// Create UI Controls and handle their Event Handlers
+// main thread calls Event handler
+// Disable Button
+// Call the Business Logic
+// register callback to receive data and then Enable button
+// M-V-VM, M-V-P, M-V-C, - View Model/Presenter/Controller
+
+public class Main {
+
+	public static void main(String[] args) {
+
+		// main thread - GUI object
+		// main thread - start message Loop /Event Loop
+
+	}
+
+}
