@@ -1,0 +1,125 @@
+package com.company;
+
+import java.util.*;
+
+class ListBox {
+	public void display(Iterable<String> iterable) {
+		Iterator<String> iterator = iterable.iterator();
+
+		while (iterator.hasNext()) {
+			System.out.println(iterator.next());
+		}
+	}
+}
+
+class NewCollection<T> implements Iterable<T> {
+
+	Object[] arr = new Object[10];
+
+	public void add(T item) {
+		arr[0] = item;
+	}
+
+	public T get(int index) {
+		return (T) arr[index];
+	}
+
+	private class NewCollectionIterator implements Iterator<T> {
+
+		private int index = 1;
+
+		@Override
+		public boolean hasNext() {
+			return index < 4;
+		}
+
+		@Override
+		public T next() {
+			if (index == 1) {
+				index = 2;
+				return a1;
+			} else if (index == 2) {
+				index = 3;
+				return b1;
+			} else if (index == 3) {
+				index = 4;
+				return c1;
+			} else {
+				return null;
+			}
+		}
+
+	}
+
+	@Override
+	public Iterator<T> iterator() {
+		return new NewCollectionIterator();
+	}
+}
+
+// Iterator Design Pattern
+class MyCollection implements Iterable<String> {
+
+	String a1 = "S1";
+	String b1 = "S2";
+	String c1 = "S3";
+
+	private class MyCollectionIterator implements Iterator<String> {
+
+		private int index = 1;
+
+		@Override
+		public boolean hasNext() {
+			return index < 4;
+		}
+
+		@Override
+		public String next() {
+			if (index == 1) {
+				index = 2;
+				return a1;
+			} else if (index == 2) {
+				index = 3;
+				return b1;
+			} else if (index == 3) {
+				index = 4;
+				return c1;
+			} else {
+				return null;
+			}
+		}
+
+	}
+
+	@Override
+	public Iterator<String> iterator() {
+		return new MyCollectionIterator();
+	}
+
+}
+
+public class Main {
+
+	public static void main(String[] args) {
+
+		ArrayList<String> names = new ArrayList<String>();
+		names.add("A1");
+		names.add("A2");
+		names.add("A3");
+		names.add("A4");
+
+		LinkedList<String> countries = new LinkedList<String>();
+		countries.add("C1");
+		countries.add("C2");
+		countries.add("C3");
+		countries.add("C4");
+
+		ListBox lb = new ListBox();
+		lb.display(names);
+		lb.display(countries);
+
+		MyCollection states = new MyCollection();
+		lb.display(states);
+
+	}
+}
