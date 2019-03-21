@@ -1,0 +1,135 @@
+package app2;
+
+import java.io.File;
+import java.util.*;
+
+//Requirement
+
+class ApplicationData {
+	double value = 0;
+}
+
+public class Main {
+
+	// Client
+	public static void main(String[] args) {
+		// Load all the classes using reflection
+		File folder = new File("./bin/app2");
+		String[] files = folder.list();
+
+		for (String file : files) {
+			try {
+				Class.forName("app2." + file.split("\\.")[0]);
+			} catch (Exception ex) {
+				System.out.println("Exception: " + ex.toString());
+			}
+		}
+		// ------------------------------------------
+
+		ApplicationData applicationData = new ApplicationData();
+
+		while (true) {
+			// Display the application data
+			System.out.println(applicationData);
+
+			// Take the input from the user : command commandValue
+			// Scanner is extensible as it can work with different
+			// Stream objects. Here Streams are Varying.
+			Scanner scanner = new Scanner(System.in);
+			String line = scanner.nextLine();
+
+			// process the command on application data using the commandValue
+			String[] items = line.split(" ");
+
+			// for each - based on Iterator Design pattern
+			for (Command command : Command.commands) {
+				command.process(items[0], Double.parseDouble(items[1]),
+						applicationData);
+			}
+
+			scanner.close();
+		}
+
+	}
+}
+
+// Abstraction
+abstract class Command {
+
+	// it should not become part of any subClass Object
+	static ArrayList<Command> commands = new ArrayList<>();
+
+	// HashTable: Key - Value
+	// static Hashtable<String, Command> commands = new Hashtable<String,
+	// Command>();
+
+	Command() {
+		commands.add(this);
+	}
+
+	abstract void process(String commandName, double commandValue,
+			ApplicationData applicationData);
+}
+
+// Implementations : Command are varying, hence encapsulate them
+class AddCommand extends Command {
+
+	AddCommand() {
+		super(/* value of this */);
+	}
+
+	static {
+		new AddCommand();
+	}
+
+	public void process(String commandName, double commandValue,
+			ApplicationData applicationData) {
+		// code to perform specific work
+		if (commandName.equalsIgnoreCase("add"))
+			applicationData.value += commandValue;
+	}
+}
+
+class MulCommand extends Command {
+
+	MulCommand() {
+		super(/* value of this */);
+	}
+
+	static {
+		new MulCommand();
+	}
+
+	public void process(String commandName, double commandValue,
+			ApplicationData applicationData) {
+		// code to perform specific work
+		if (commandName.equalsIgnoreCase("mul"))
+			applicationData.value *= commandValue;
+	}
+}
+
+// Try to discover what is varying?
+// Encapsulate It - Hide Implementation behind Abstraction from Client
+// Implementation - Class whose object we create to perform specific work
+// Abstraction - Interface that decides what Implementation should do
+// Client - Can use Abstraction to reach implementation
+// Generally we should hide Implementation behind Abstraction when
+// Implementation varies
+// Client becomes extensible when we are VARYING implementation from it using
+// Abstraction
+
+// When new Implementations are developed, Client should not be required
+// to be changed. This is called OCP: Open Close Principle
+
+// Robert Martin
+// S
+// O - OCP - Open Close Principle
+// L
+// I
+// D - DI - Dependency Inversion
+
+// OOP = SOLID Principles + Design Patterns
+// Encapsulation : Hiding VARYING implementations behind abstraction from client
+// so that client becomes Extensible
+
+// hiding a class is also called encapsulation , using Interface
