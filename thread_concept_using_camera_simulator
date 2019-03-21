@@ -1,0 +1,172 @@
+package com.company;
+
+import java.util.*;
+
+//Requirement : an object will attach to camera driver and read data continuously from that
+
+@FunctionalInterface()
+interface Capturable {
+	void send(int count);
+}
+
+class CameraDeviceDriverSimulator {
+	private Thread secondaryThread;
+	private boolean flag;
+	private Capturable capturable;
+
+	public CameraDeviceDriverSimulator(Capturable capturable) {
+		this.capturable = capturable;
+	}
+
+	public void start() { // MT
+		flag = true;
+		secondaryThread = new Thread(() -> {
+			startLoop();
+		});
+		secondaryThread.setDaemon(true);  //ST stops when MT stops
+		secondaryThread.start(); // MT starts ST
+	}// MT
+
+	public void stop() { // MT
+		flag = false; // MT
+		secondaryThread = null; // MT
+	}
+
+	private void startLoop() { // ST
+		int count = 1;
+		while (flag) { // ST
+			this.capturable.send(count);
+			try {
+				Thread.sleep(1000);
+			} catch (Exception ex) {
+				// TODO : Log the Exception
+			}
+			count++; // ST
+		} // ST
+	}// ST
+}
+
+@FunctionalInterface
+interface EventListener {
+	void send(Object data);
+}
+
+class Event {
+	private ArrayList<EventListener> listeners = new ArrayList<>();
+
+	public void addListener(EventListener listener) {
+		synchronized (listeners) {
+			listeners.add(listener);
+		}
+	}
+
+	public void removeListener(EventListener listener) {
+		synchronized (listeners) {
+			listeners.remove(listener);
+		}
+	}
+
+	public void raiseEvent(Object data) {
+		synchronized (listeners) {
+			for (EventListener listener : listeners) {
+				listener.send(data);
+			}
+		}
+	}
+}
+
+class Camera {
+
+	private Event cameraFeedEvent = new Event();
+
+	public Event getCameraFeedEvent() {
+		return cameraFeedEvent;
+	}
+
+	private Event cameraNoFeedEvent = new Event();
+
+	public Event getCameraNoFeedEvent() {
+		return cameraNoFeedEvent;
+	}
+
+	// C++ Device Driver Object
+	CameraDeviceDriverSimulator cameraDeviceDriverSimulator;
+
+	private Camera() {
+		cameraDeviceDriverSimulator = new CameraDeviceDriverSimulator(
+				(count) -> {
+					cameraFeedEvent.raiseEvent(count);
+				});
+		cameraDeviceDriverSimulator.start();
+	}
+
+	private static Object sync = new Object(); // will be used only for
+												// synchronization
+
+	private static Camera camera = null;
+
+	public static Camera get() {
+		if (camera == null) { // Double check pattern
+			synchronized (sync) {
+				if (camera == null) {
+					camera = new Camera();
+				}
+			}
+		}
+		return camera;
+	}
+}
+
+class SaveToHardDisk {
+	public SaveToHardDisk() {
+		Camera.get().getCameraFeedEvent().addListener((count) -> {
+
+		});
+	}
+}
+
+class StreamOverNetwork {
+	public StreamOverNetwork() {
+		Camera.get().getCameraFeedEvent().addListener((count) -> {
+
+		});
+	}
+}
+
+class Ring911 {
+	public Ring911() {
+		Camera.get().getCameraNoFeedEvent().addListener((count) -> {
+
+		});
+	}
+}
+
+class Alarm {
+	public Alarm() {
+		Camera.get().getCameraNoFeedEvent().addListener((count) -> {
+
+		});
+	}
+}
+
+// consoleUI
+class ConsoleUI {
+
+	public void show(/* this */) {
+		Camera camera = new Camera();
+	}
+
+}
+
+// GraphicalUI
+
+// Servlet / Spring MWC Controller
+
+public class Main {
+
+	public static void main(String[] args) {
+		ConsoleUI cui = new ConsoleUI();
+		cui.show();
+	}
+
+}
