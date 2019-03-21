@@ -1,0 +1,115 @@
+package com.company;
+
+import java.util.Scanner;
+
+/*//SuperClass or Base Class
+ class A{
+ public void f1(A this){
+ this.f2(); //late-bound
+ }
+
+ public void f2(){ //virtual
+
+ }
+ }
+
+ //sub class or Derived Class
+ class B extends A{
+
+ public void f2(){ //override
+
+ }
+ }*/
+
+interface Servlet {
+	void service(HttpRequest request);
+}
+
+// Helper Class - Sun Microsystems Created
+class HTTPServlet implements Servlet {
+
+	// virtual methods
+	void doGet() {
+	}
+
+	void doPost() {
+	}
+
+	void doPut() {
+	}
+
+	void doDelete() {
+	}
+
+	@Override
+	public void service(/* HTTPServlet this */HttpRequest request) {
+		if (request.getMethod().equalsIgnoreCase(("GET"))) {
+			doGet();// late-bound call
+		} else if (request.getMethod().equalsIgnoreCase(("POST"))) {
+			doPost();// late-bound call
+		} else if (request.getMethod().equalsIgnoreCase(("PUT"))) {
+			doPut();// late-bound call
+		} else if (request.getMethod().equalsIgnoreCase(("DELETE"))) {
+			doDelete();// late-bound call
+		}
+	}
+}
+
+class Page1Servlet extends HTTPServlet {
+	@Override
+	void doGet() {
+
+	}
+
+	@Override
+	void doPost() {
+
+	}
+}
+
+class Page2Servlet extends HTTPServlet {
+	@Override
+	void doGet() {
+
+	}
+}
+
+class HttpRequest {
+	String method; // GET, POST, PUT, DELETE, etc.
+
+	public String getMethod() {
+		return method;
+	}
+
+	HttpRequest(String method) {
+		this.method = method;
+	}
+}
+
+// Web Server receives HTTP request from the Browser
+// http://domainname/Page1
+// http://domainname/Page2
+public class Main {
+
+	public static void main(String[] args) {
+
+		/*
+		 * B b1 = new B(); b1.f1();
+		 */
+
+		while (true) {
+			Scanner scanner = new Scanner(System.in);
+			String url = scanner.next(); // only enter Page1 or Page2
+
+			try {
+				Class cls = Class.forName("com.company." + url);
+				Servlet servlet = (Servlet) cls.newInstance();
+				servlet.service(new HttpRequest("GET"));
+			} catch (Exception ex) {
+				System.out.println(ex.getMessage());
+			}
+		}
+
+	}
+
+}
