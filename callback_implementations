@@ -1,0 +1,54 @@
+package com.company;
+
+import javax.sound.midi.MidiMessage;
+
+//Requirement : Define a function that accepts a number
+//and generates multiplication table of that number from 1 to 10
+
+@FunctionalInterface
+// such interfaces are for callbacks only
+interface ResultCallback {
+	void send(int number, int i, int result); // only one method
+}
+
+class Utility {
+	// Callee
+	public static void multiplicationTable(int number, ResultCallback callback) {
+		for (int i = 1; i <= 10; i++) {
+			int result = number * i;
+			// callback to the caller and give the data to the caller
+			callback.send(number, i, result);
+		}
+	}
+}
+
+public class Main {
+
+	// Caller
+	public static void main(String[] args) {
+		// Lambda
+		Utility.multiplicationTable(5, (number, i, result) -> {
+
+		});
+		Utility.multiplicationTable(6, new ResultCallback() {
+
+			@Override
+			public void send(int number, int i, int result) {
+
+			}
+		});
+
+		Utility.multiplicationTable(7, new Receiver() {
+
+		});
+	}
+}
+
+class Receiver implements ResultCallback {
+
+	@Override
+	public void send(int number, int i, int result) {
+
+	}
+
+}
