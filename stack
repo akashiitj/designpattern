@@ -1,0 +1,35 @@
+package com.training;
+
+//New data Type - 1
+class Stack 
+{
+	// Instance Data Members - 2
+	int items[] = new int[10];
+	int top = 0;
+
+	// Instance Method - 3
+	void push(/* Stack this */ int item) { 
+		items[top] = item;
+		top++;
+	}
+
+	int pop(/* Stack this */) { // Instance Method
+		top--;
+		return items[top];
+	}
+
+	// -------------------------------------
+	// Developer 2
+	public static void main(String[] args) {
+	
+		Stack s1 = new Stack();
+		Stack s2 = new Stack();
+		Stack s3 = new Stack();
+		
+		s1.push(100);
+		s2.push(1000);
+		s3.push(300);
+		
+		int item = s1.pop();
+	}
+}
