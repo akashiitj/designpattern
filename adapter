@@ -1,0 +1,114 @@
+package com.company;
+
+//Requirement :
+//develop UI Controls Library containing Button, Grid and ListBox to be used by applications.
+//These applications will run on TV set-top box. The set top box will be running some OS, may be, Windows CE, Embedded Linux, VxWorks, etc.Each OS comes with Graphics Libray that uses GPU. 
+//For example, Windows CE comes with DirectX, Embedded Linux can have OpenGL, etc. 
+//UI Control classes must use  the OS specific library to perform their UI drawing!(The way Google Earth app does)
+//means our classes should be designed in such a way that they can be configured to use different OS specific graphic libraries.
+
+abstract class GraphicsLibrary{
+	public abstract void drawRectangle(int x, int y, int width, int height, int radius);
+	public abstract void drawText(int x, int y, String text);
+	
+	public static GraphicsLibrary graphicsLibrary;
+	protected GraphicsLibrary(){
+		graphicsLibrary = this;
+	}
+}
+
+class DirectXAdapter extends GraphicsLibrary{
+	static {new DirectXAdapter();}
+	
+	@Override
+	public void drawRectangle(int x, int y, int width, int height, int radius) {
+		System.out.println("Call into DirectX to draw Rectangle");
+		
+	}
+
+	@Override
+	public void drawText(int x, int y, String text) {
+		System.out.println("Call into DirectX to draw Text");	
+	}
+}
+
+class OpenGLAdapter extends GraphicsLibrary{
+	static {new OpenGLAdapter();}
+	
+	@Override
+	public void drawRectangle(int x, int y, int width, int height, int radius) {
+		System.out.println("Call into OpenGL to draw Rectangle");
+		
+	}
+
+	@Override
+	public void drawText(int x, int y, String text) {
+		System.out.println("Call into OpenGL to draw Text");	
+	}
+}
+
+class Loader{
+	public static void LoadClasses(){
+		try{
+			Class.forName("com.company.DirectXAdapter");
+		} catch( Exception ex){
+			System.out.println(ex.getMessage());
+		}
+	}
+}
+
+//------------------------------------------------------
+abstract class UIControl{
+	private GraphicsLibrary graphicsLibrary = null;
+	
+	protected UIControl(){
+		graphicsLibrary = GraphicsLibrary.graphicsLibrary;
+	}
+	
+	protected void drawRectangle(int x, int y, int width, int height, int radius){
+		graphicsLibrary.drawRectangle(x, y, width, height, radius);
+	}
+	protected void drawText(int x, int y, String text){
+		graphicsLibrary.drawText(x, y, text);
+	}
+}
+
+class Button extends UIControl{
+	
+	public void draw(){
+		System.out.println("------------Button starts--------");
+		drawRectangle(10, 10, 100, 100, 0);
+		drawText(10, 10, "Click");
+		System.out.println("------------Button ends--------");
+	}
+}
+
+class Grid extends UIControl{
+	
+	public void draw(){
+		System.out.println("------------Grid starts--------");
+		drawRectangle(10, 10, 100, 100, 0);
+		drawText(10, 10, "Channel1");
+		drawRectangle(10, 10, 100, 100, 0);
+		drawText(10, 10, "Channel2");
+		drawRectangle(10, 10, 100, 100, 0);
+		drawText(10, 10, "Channel3");
+		System.out.println("------------Grid ends--------");
+	}
+}
+
+
+public class Main {
+
+	public static void main(String[] args) {
+		Loader.LoadClasses();
+		
+		Button button = new Button();
+		button.draw();
+		
+		Grid grid = new Grid();
+		grid.draw();
+
+	}
+
+}
