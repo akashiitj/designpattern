@@ -1,0 +1,219 @@
+package com.company;
+
+import java.util.ArrayList;
+import java.util.Stack;
+
+//Requirement: Create PCs, Windows, Doors in a room with operations
+//that can be applied on them. Each operation should be undone.
+//for PC, we can change the color
+//for door, we can turn it by any angle
+//for window, can have 2 different states : open, close
+
+//SOLID Principles
+//SRP : Single Responsibility Principle
+
+interface ObjectState {
+	ObjectState undo();
+}
+
+abstract class Item {
+
+	// State of the object
+	private int x, y, width, height; // these are instance data members
+
+	// Instance data members become part of sub-class objects
+
+	// Instance Methods work for sub-class objects
+	public int getX(/* Item this */) {
+		return this.x;
+	}
+
+	public int getY(/* Item this */) {
+		return this.y;
+	}
+
+	public int getWidth(/* Item this */) {
+		return this.width;
+	}
+
+	public int getHeight(/* Item this */) {
+		return this.height;
+	}
+
+	// Constructor
+	protected Item(/* Item this */int x, int y, int width, int height) {
+		this.x = x;
+		this.y = y;
+		this.width = width;
+		this.height = height;
+	}
+
+	// Inner Class
+	private class Position implements ObjectState {
+		// Item Reference Variable; //Instance Data Member
+		private int previousX, previousY; // Instance Data Member
+
+		private Position(/* Position this */int previousX, int previousY) {
+			this.previousX = previousX;
+			this.previousY = previousY;
+		}
+
+		public ObjectState undo(/* Position this */) {
+			return Item.this.move(this.previousX, this.previousY);
+		}
+	}
+	
+	//this helps in making late-bound call to implementations
+	public abstract void draw();
+
+	public ObjectState move(/* Item this */int x, int y) {
+		Position position = this.new Position(this.x, this.y);
+		this.x = x;
+		this.y = y;
+		this.draw();
+		return position;
+	}
+
+	
+	private class Width implements ObjectState{
+		// Item Reference Variable; //Instance Data Member
+		private int previousWidth;
+		
+		private Width(int previousWidth){
+			this.previousWidth = previousWidth;
+		}
+		
+		public ObjectState undo(){
+			return Item.this.changeWidth(this.previousWidth);
+		}
+	}
+	
+	public ObjectState changeWidth(/* Item this */int width) {
+		Width w = new Width(this.width); //capture
+		this.width = width;
+		return w; //externalized
+	}
+	
+	/*private class Height implements ObjectState{
+		// Item Reference Variable; //Instance Data Member
+		private int previousHeight;
+		
+		private Height(int previousHeight){
+			this.previousHeight = previousHeight;
+		}
+		
+		public ObjectState undo(){
+			return Item.this.changeHeight(this.previousHeight);
+		}
+	}
+
+	public ObjectState changeHeight( Item this int height) {
+		Height h = new Height(this.height); //capture
+		this.height = height;
+		return h; //externalized
+	}*/
+}
+
+class PC extends Item {
+	private String color;
+
+	public PC(/* Item this */int x, int y, int width, int height, String color) {
+		super(x, y, width, height);
+		this.color = color;
+	}
+
+	public void changeColor(String color) {
+		this.color = color;
+	}
+
+	public void draw(/* PC this */) {
+		System.out.println("PC: " + this.getX() + " " + this.getY() + " "
+				+ this.getWidth() + " " + this.getHeight() + " " + this.color);
+	}
+}
+
+class Window extends Item {
+	private boolean open;
+
+	public Window(/* Item this */int x, int y, int width, int height, boolean open) {
+		super(x, y, width, height);
+		this.open = open;
+	}
+
+	public void toggle() {
+		this.open = !this.open;
+		this.draw();
+	}
+
+	public void draw(/* Window this */) {
+		System.out.println("Window: " + this.getX() + " " + this.getY() + " "
+				+ this.getWidth() + " " + this.getHeight() + " " + this.open);
+	}
+}
+
+class Door extends Item {
+	private int angle;
+
+	public Door(/* Item this */int x, int y, int width, int height, int angle) {
+		super(x, y, width, height);
+		this.angle = angle;
+	}
+
+	public void rotate(int angle) {
+		this.angle = angle;
+	}
+
+	public void draw(/* Door this */) {
+		System.out.println("Door: " + this.getX() + " " + this.getY() + " "
+				+ this.getWidth() + " " + this.getHeight() + " " + this.angle);
+	}
+}
+
+public class Main {
+
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+
+		PC pc1 = new PC(1, 1, 100, 100, "red");
+		pc1.draw();
+
+		Window window1 = new Window(2, 2, 200, 200, true);
+		window1.draw();
+
+		Door door1 = new Door(3, 3, 300, 300, 45);
+		door1.draw();
+
+		Stack<ObjectState> states = new Stack<>();
+
+		states.add(pc1.move(50, 50));
+		pc1.draw();
+
+		states.add(window1.move(40, 40));
+		window1.draw();
+
+		states.add(door1.move(50, 50));
+		pc1.draw();
+
+		states.add(door1.changeWidth(500));
+		door1.draw();
+
+		/*states.add(door1.changeHeight(700));
+		door1.draw();
+
+		states.add(door1.rotate(90));
+		door1.draw();
+
+		states.add(window1.changeWidth(1500));
+		window1.draw();
+
+		states.add(window1.changeHeight(1700));
+		window1.draw();*/
+
+		states.pop().undo();
+		states.pop().undo();
+		states.pop().undo();
+		states.pop().undo();
+		//states.pop().undo();
+		//states.pop().undo();
+	}
+}
